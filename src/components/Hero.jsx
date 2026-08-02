@@ -32,7 +32,7 @@ export default function Hero() {
                 <div className="lbl">Shipping production code</div>
               </div>
               <div>
-                <div className="num">AI / CV / Backend</div>
+                <div className="num">AI / Web development / Backend</div>
                 <div className="lbl">Core focus areas</div>
               </div>
             </div>
