@@ -1,11 +1,107 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+
+function VideoCover({ videoUrl, posterUrl, liveUrl }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Ensure muted is set explicitly on DOM node for Safari/iOS compatibility
+    video.muted = true;
+
+    const playVideo = () => {
+      const promise = video.play();
+      if (promise !== undefined) {
+        promise.catch(() => {
+          // Swallow autoplay policy failure silently without console errors
+        });
+      }
+    };
+
+    // Attempt initial play
+    playVideo();
+
+    // IntersectionObserver to re-trigger play when scrolled into view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            playVideo();
+          }
+          // Intentionally do NOT pause when scrolled out, keeping video truly "always" playing
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <div className="video-showcase-frame">
+      <div className="video-browser-bar">
+        <div className="browser-dots">
+          <span className="dot red"></span>
+          <span className="dot yellow"></span>
+          <span className="dot green"></span>
+        </div>
+        <div className="browser-url">
+          <span className="lock-icon">🔒</span> {liveUrl || 'https://brandnew-serenicospaces.netlify.app/'}
+        </div>
+        <div className="browser-badge">Live Preview</div>
+      </div>
+      <div className="video-wrapper">
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          poster={posterUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        />
+      </div>
+    </div>
+  );
+}
 
 const projects = [
   {
-    id: "LOG_01 // EVOLV-AI",
+    id: "LOG_01 // SERENICOSPACES",
+    status: "Live",
+    statusType: "live",
+    name: "SerenicoSpaces",
+    subtitle: "Luxury Interior Design Studio Website",
+    category: "Bespoke Web App",
+    accentColor: "amber",
+    tagline: "A bespoke marketing website for a luxury interior design studio operating out of Guwahati and Imphal — built to convert high-intent visitors into consultation bookings through cinematic storytelling.",
+    videoUrl: "https://res.cloudinary.com/clt3bc7w/video/upload/v1786018503/Interior-website_video_c497uh.mp4",
+    posterUrl: "https://res.cloudinary.com/clt3bc7w/video/upload/so_0/v1786018503/Interior-website_video_c497uh.jpg",
+    liveUrl: "https://brandnew-serenicospaces.netlify.app/",
+    tags: ["React", "Component-based Architecture", "HTML5", "CSS3", "Tailwind CSS"],
+    problem: "High-end interior design clients expect an immediate sense of craftsmanship and spatial elegance before booking a consultation, but generic agency layouts fail to convey luxury, causing high drop-off rates.",
+    hardPart: "Achieving smooth, cinematic visual flow across complex layout compositions while preserving fast load times and seamless cross-device performance, particularly on high-DPI mobile screens.",
+    decision: "[Fill in: decision on component modularity vs single-page dynamic sections, dynamic media loading strategy, or scroll animation orchestration — 2-3 honest sentences explaining your architectural choices.]",
+    differently: "[Fill in: one technical architectural refinement — e.g., adopting headless CMS for client copy updates or further optimizing image asset pipelines — 2-3 honest sentences.]",
+    postmortem: "[Fill in: actual postmortem note detailing a specific production challenge — e.g., mobile video autoplay restrictions on Low Power Mode or Safari rendering quirks — and how it was resolved.]",
+    links: [
+      { text: "Visit Live Site →", href: "https://brandnew-serenicospaces.netlify.app/", disabled: false }
+    ]
+  },
+  {
+    id: "LOG_02 // EVOLV-AI",
     status: "Private repo — live demo below",
     statusType: "live",
-    title: "evolv-ai — an agentic job‑application engine",
+    name: "evolv-ai",
+    subtitle: "an agentic job‑application engine",
+    category: "Agentic AI",
+    accentColor: "teal",
     tagline: "An autonomous agent that finds relevant job postings, tailors a resume against each one, and submits the application — without a human in the loop for every step.",
     tags: ["TypeScript", "Agentic AI", "LLM tooling", "Web automation", "Resume parsing"],
     problem: "Job hunting at scale is manual, repetitive, and inconsistent — the same 5 steps repeated across dozens of sites with different forms, formats, and rules.",
@@ -19,10 +115,13 @@ const projects = [
     ]
   },
   {
-    id: "LOG_02 // LMS-BACKEND",
+    id: "LOG_03 // LMS-BACKEND",
     status: "In active development",
     statusType: "progress",
-    title: "LMS — a course platform backend built around access control",
+    name: "LMS-Backend",
+    subtitle: "a course platform backend built around access control",
+    category: "Backend Architecture",
+    accentColor: "blue",
     tagline: "A learning‑management backend where enrollment state, quiz integrity, and media access are treated as engineering problems, not CRUD.",
     tags: ["Node.js", "Express.js", "PostgreSQL", "Auth / RBAC", "Signed URLs"],
     problem: "Course platforms look simple from the outside — login, watch a video, take a quiz — until you have to enforce exactly who can see what, and stop people from gaming it.",
@@ -36,10 +135,13 @@ const projects = [
     ]
   },
   {
-    id: "LOG_03 // INTELLIGUARD-AI",
+    id: "LOG_04 // INTELLIGUARD-AI",
     status: "Public repo",
     statusType: "live",
-    title: "Intelliguard-AI — real‑time PPE compliance detection",
+    name: "Intelliguard-AI",
+    subtitle: "real‑time PPE compliance detection",
+    category: "Computer Vision",
+    accentColor: "green",
     tagline: "A computer‑vision system that flags missing personal‑protective‑equipment on an industrial site from live or recorded video, using YOLOv8.",
     tags: ["Python", "YOLOv8", "OpenCV", "Computer Vision"],
     problem: "Manual PPE compliance checks don't scale across a large site, and violations get caught after the fact instead of in the moment.",
@@ -60,7 +162,7 @@ export default function WorkSection() {
       <div className="wrap">
         <div className="section-head">
           <span className="eyebrow amber">Selected work</span>
-          <h2>Three systems, three hard problems.</h2>
+          <h2>Four systems, four hard problems.</h2>
           <p>
             Each project below is documented the way I'd walk an engineer through it — the actual problem, the decision I had to make, and what broke along the way. Not a feature list.
           </p>
@@ -73,13 +175,27 @@ export default function WorkSection() {
               <span className={`log-status ${project.statusType}`}>{project.status}</span>
             </div>
             <div className="log-body">
-              <h3>{project.title}</h3>
+              <h3 className="project-title">
+                <span className={`project-name ${project.accentColor}`}>{project.name}</span>
+                <span className="title-separator">—</span>
+                <span className="project-subtitle">{project.subtitle}</span>
+                <span className={`project-badge ${project.accentColor}`}>{project.category}</span>
+              </h3>
               <p className="log-tagline">{project.tagline}</p>
               <div className="tag-row">
                 {project.tags.map((tag, tIdx) => (
                   <span className="tag" key={tIdx}>{tag}</span>
                 ))}
               </div>
+
+              {project.videoUrl && (
+                <VideoCover
+                  videoUrl={project.videoUrl}
+                  posterUrl={project.posterUrl}
+                  liveUrl={project.liveUrl}
+                />
+              )}
+
               <div className="log-fields">
                 <div className="field">
                   <h4>The problem</h4>

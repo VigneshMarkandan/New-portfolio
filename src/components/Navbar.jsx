@@ -7,16 +7,11 @@ export default function Navbar() {
     setIsOpen(false);
   };
 
-  const handleEmailClick = (e) => {
-    // Attempt standard mailto; fallback to web Gmail if needed
-    window.location.href = 'mailto:vigneshmarkandan3578@gmail.com';
-  };
-
   return (
     <header>
       <nav>
-        <a href="#" class="logo">
-          <span class="dot"></span>vignesh.dev
+        <a href="#" className="logo">
+          <span className="dot"></span>vignesh.dev
         </a>
         <div className={`nav-links ${isOpen ? 'open' : ''}`} id="navLinks">
           <a href="#work" onClick={handleLinkClick}>Work</a>
@@ -28,8 +23,7 @@ export default function Navbar() {
           href="https://mail.google.com/mail/?view=cm&to=vigneshmarkandan3578@gmail.com" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="nav-cta" 
-          onClick={handleEmailClick}
+          className="nav-cta"
         >
           Email me
         </a>
